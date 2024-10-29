@@ -26,7 +26,7 @@ export class AuthController {
   @Get('me')
   @ApiOkResponse({ type: UserEntity })
   async me(@Request() req) {
-    if (req.user) {
+    if (!req.user) {
       throw new ForbiddenException();
     }
 

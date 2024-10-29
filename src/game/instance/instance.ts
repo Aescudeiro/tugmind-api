@@ -2,10 +2,10 @@ import { Room } from '../../rooms/entities/room-ws.entity';
 import { ServerEvents, ServerPayloads } from '../types';
 
 export class Instance {
-  public hasStarted: boolean = false;
-  public hasFinished: boolean = false;
-  public isSuspended: boolean = false;
-  public currentRound: number = 1;
+  public hasStarted = false;
+  public hasFinished = false;
+  public isSuspended = false;
+  public currentRound = 1;
 
   constructor(private readonly room: Room) {}
 
