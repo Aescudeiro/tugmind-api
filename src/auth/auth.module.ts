@@ -12,7 +12,7 @@ export const jwtSecret = 'secret';
 @Module({
   imports: [
     PrismaModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: jwtSecret,
       signOptions: { expiresIn: '24h' },
@@ -21,5 +21,6 @@ export const jwtSecret = 'secret';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

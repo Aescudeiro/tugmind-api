@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,8 +22,8 @@ import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@Controller('user')
-@ApiTags('user')
+@Controller('users')
+@ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -54,10 +56,14 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async update(
+    @Request() req,
     @Param('id') id: string,
-
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    if (req.user.id !== id) {
+      throw new ForbiddenException();
+    }
+
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
@@ -65,7 +71,11 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
-  async remove(@Param('id') id: string) {
+  async remove(@Request() req, @Param('id') id: string) {
+    if (req.user.id !== id) {
+      throw new ForbiddenException();
+    }
+
     return new UserEntity(await this.usersService.remove(id));
   }
 }

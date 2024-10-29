@@ -4,6 +4,9 @@ import dabatabseConfig from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { GameModule } from './game/game.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -11,9 +14,12 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       load: [dabatabseConfig],
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     UsersModule,
     AuthModule,
+    RoomsModule,
+    GameModule,
   ],
 })
 export class AppModule {}

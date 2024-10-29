@@ -3,16 +3,16 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { AuthEntity } from './entities/auth.entity';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from './../prisma/prisma.service';
+import { AuthEntity } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
@@ -28,8 +28,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    return {
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    return new AuthEntity({
+      ...user,
+      accessToken: this.jwtService.sign({ sub: user.id }),
+    });
+  }
+
+  async verifyJwt(token: string) {
+    return this.jwtService.verifyAsync(token);
   }
 }

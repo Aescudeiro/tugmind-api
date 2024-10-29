@@ -20,94 +20,8 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  playerId  Player?
-}
 
-model Team {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  roomId    String
-  score     Int     @default(5)
-  players Player[]
-
-  room      Room     @relation("RoomTeams", fields: [roomId], references: [id])
-  winningRooms Room? @relation("RoomWinningTeam")
-}
-
-enum PlayerStatus {
-  NOT_READY
-  READY
-}
-
-model Player {
-  id        String   @id @default(cuid())
-  teamId    String
-  roomId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    PlayerStatus
-  responses PlayerResponses[]
-  userId    String   @unique
-
-  user      User     @relation(fields: [userId], references: [id])
-  room      Room     @relation(fields: [roomId], references: [id])
-  team      Team     @relation(fields: [teamId], references: [id])
-}
-
-enum ChallengeType {
-  MATHEMATICS
-  WRITING
-  PUZZLE
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
-
-model Challenge {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  question  String
-  answer    String
-  type      ChallengeType
-  difficulty Difficulty
-  rounds    Round[]
-}
-
-model Round {
-  id        String   @id @default(cuid())
-  roomId    String
-  createdAt DateTime @default(now())
-  challengeId String
-  responses PlayerResponses[]
-
-  room      Room     @relation(fields: [roomId], references: [id])
-  challenge Challenge @relation(fields: [challengeId], references: [id])
-}
-
-model PlayerResponses {
-  id        String   @id @default(cuid())
-  playerId  String
-  roomId    String
-  roundId   String
-  createdAt DateTime @default(now())
-  answer    String
-
-  room      Room     @relation(fields: [roomId], references: [id])
-  player    Player   @relation(fields: [playerId], references: [id])
-  round     Round    @relation(fields: [roundId], references: [id])
-}
-
-enum RoomStatus {
-  WAITING
-  IN_PROGRESS
-  FINISHED
-  CANCELLED
+  rooms     Room[]
 }
 
 model Room {
@@ -115,13 +29,7 @@ model Room {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  winningTeamId  String? @unique
-  status    RoomStatus
-  difficulty Difficulty
-  teams     Team[]   @relation("RoomTeams")
-  players   Player[]
-  responses PlayerResponses[]
-  rounds    Round[]
-  
-  winningTeam Team? @relation("RoomWinningTeam", fields: [winningTeamId], references: [id])
+
+  ownerId   String   @map("ownerId")
+  owner     User     @relation(fields: [ownerId], references: [id])
 }
